@@ -1,17 +1,15 @@
 const axios = require('axios');
 
 // fetch data
-// fetchLocationYearData = async(location, year) => {
-// 	const response = await axios.get(`https://grudwxjpa2.execute-api.eu-west-2.amazonaws.com/dev/${location}/year/${year}`, { headers: {'x-api-key': 'mcDLmlxrtw7ZHC70gD8FL4rtrXSPsUEB4iSp4lg3'}
-// 	});
-// 	console.log(response)
-// 	return response.data.result;
-// }
+fetchLocationYearData = async (location, year) => {
+	const dataArray = await axios.get(`https://grudwxjpa2.execute-api.eu-west-2.amazonaws.com/dev/${location}/year/${year}`, { headers: {'x-api-key': 'mcDLmlxrtw7ZHC70gD8FL4rtrXSPsUEB4iSp4lg3'}})
+		.then(response => response.data.result);
+	return dataArray
+}
 
 // Get maximum Temperature for a year - Must return a number
 exports.getMaxTemperature = async ({location, year}) => {
-	const dataArray = await axios.get(`https://grudwxjpa2.execute-api.eu-west-2.amazonaws.com/dev/${location}/year/${year}`, { headers: {'x-api-key': 'mcDLmlxrtw7ZHC70gD8FL4rtrXSPsUEB4iSp4lg3'}})
-		.then(response => response.data.result);
+	const dataArray = await fetchLocationYearData(location, year)
 	//console.log(dataArray);
 	let maxTemp = 0;
 	for (let i = 0; i < dataArray.length; i++) {
