@@ -8,5 +8,12 @@ describe('getMinTemperature', () => {
 		const result = await getMinTemperature({location:location, year:year});
 
 		expect(result).toEqual(-1.8);
-	})
+	});
+  it('Returns 0 if the function would error', async() => {
+		// if API does not support input:
+		const location = 'london';
+		const year = 2018;
+		const result = await getMinTemperature({location:location, year:year});
+		expect(result).toEqual(0)
+	});
 })

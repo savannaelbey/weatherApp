@@ -2,34 +2,45 @@ const axios = require('axios');
 
 // fetch data
 fetchData = async (location, year) => {
-	const dataArray = await axios.get(`https://grudwxjpa2.execute-api.eu-west-2.amazonaws.com/dev/${location}/year/${year}`, { headers: {'x-api-key': 'mcDLmlxrtw7ZHC70gD8FL4rtrXSPsUEB4iSp4lg3'}})
-		.then(response => response.data.result);
-	return dataArray;
+	try {
+		const dataArray = await axios.get(`https://grudwxjpa2.execute-api.eu-west-2.amazonaws.com/dev/${location}/year/${year}`, { headers: {'x-api-key': 'mcDLmlxrtw7ZHC70gD8FL4rtrXSPsUEB4iSp4lg3'}})
+			.then(response => response.data.result);
+		return dataArray;
+	} catch (error) {
+		return 'error';
+	}
 }
 
 // Get maximum Temperature for a year - Must return a number
 exports.getMaxTemperature = async ({location, year}) => {
 	const weatherData = await fetchData(location, year);
-	//console.log(dataArray);
-	let maxTemp = weatherData[0].temperature_max;
-	for (let i = 0; i < weatherData.length; i++) {
-		if (weatherData[i].temperature_max > maxTemp) {
-			maxTemp = weatherData[i].temperature_max;
+	if (weatherData !== 'error') {
+		let maxTemp = weatherData[0].temperature_max;
+		for (let i = 0; i < weatherData.length; i++) {
+			if (weatherData[i].temperature_max > maxTemp) {
+				maxTemp = weatherData[i].temperature_max;
+			}
 		}
+		return typeof(maxTemp) === 'number' ? maxTemp : 0;
+	} else {
+		return 0;
 	}
-	return maxTemp;
 }
 
 // Get minimum temperature for a year - Must return a number
 exports.getMinTemperature = async ({location, year}) => {
 	const weatherData = await fetchData(location, year);
-	let minTemp = weatherData[0].temperature_min;
-	for (let i = 0; i < weatherData.length; i++) {
-		if (weatherData[i].temperature_min < minTemp) {
-			minTemp = weatherData[i].temperature_min;
+	if (weatherData !== 'error') {
+		let minTemp = weatherData[0].temperature_min;
+		for (let i = 0; i < weatherData.length; i++) {
+			if (weatherData[i].temperature_min < minTemp) {
+				minTemp = weatherData[i].temperature_min;
+			}
 		}
+		return typeof(minTemp) === 'number' ? minTemp : 0;
+	} else {
+		return 0;
 	}
-	return minTemp;
 }
 
 // Get maximum Temperature for all years - Must return a number
