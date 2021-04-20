@@ -70,7 +70,19 @@ exports.getMaxTemperatureForLocation = async ({location}) => {
 
 // Get minimum temperature for all years - Must return a number
 exports.getMinTemperatureForLocation = async ({location}) => {
-	return 0;
+	const locationData = await fetchData(location, 0);
+	let startYear = locationData.startYear;
+	let endYear = locationData.endYear;
+	let minTempForAllYears = 100 ;
+	// find min temp for each year
+	for (let year = startYear; year <= endYear; year++) {
+		let minTemp = await exports.getMinTemperature({location:location, year:year});
+		//console.log(minTemp)
+		if (minTemp < minTempForAllYears) {
+			minTempForAllYears = minTemp;
+		}
+	}
+	return minTempForAllYears;
 }
 
 // Get average sun hours for a year - Must return a number
