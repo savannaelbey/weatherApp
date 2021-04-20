@@ -14,6 +14,9 @@
 		"jest": "^25.1.0"
 	},
 	"jest": {
-		"testEnvironment": "node"
+		"testEnvironment": "node",
+		"setupFilesAfterEnv": [
+			"<rootDir>/testSetupFile.js"
+		]
 	}
 }

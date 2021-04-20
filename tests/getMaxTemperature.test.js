@@ -1,7 +1,7 @@
-const {getMaxTemperature} = require('../src/index')
+const {getMaxTemperature} = require('../src/index');
 
 describe('getMaxTemperature', () => {
-	it('Successfully gets the max Temperature for oxford 2018', async () =>{
+	it('Successfully gets the max Temperature for oxford 2018', async () => {
 		const location = 'oxford';
 		const year = 2018;
 		const result = await getMaxTemperature({location:location, year:year});

@@ -3,9 +3,15 @@ const axios = require('axios');
 // fetch data
 fetchData = async (location, year) => {
 	try {
-		const dataArray = await axios.get(`https://grudwxjpa2.execute-api.eu-west-2.amazonaws.com/dev/${location}/year/${year}`, { headers: {'x-api-key': 'mcDLmlxrtw7ZHC70gD8FL4rtrXSPsUEB4iSp4lg3'}})
-			.then(response => response.data.result);
-		return dataArray;
+		if (year) {
+			const locationYearDataArray = await axios.get(`https://grudwxjpa2.execute-api.eu-west-2.amazonaws.com/dev/${location}/year/${year}`, { headers: {'x-api-key': 'mcDLmlxrtw7ZHC70gD8FL4rtrXSPsUEB4iSp4lg3'}})
+				.then(response => response.data.result);
+			return locationYearDataArray;
+		} else {
+			const locationData = await axios.get(`https://grudwxjpa2.execute-api.eu-west-2.amazonaws.com/dev/${location}/years`, { headers: {'x-api-key': 'mcDLmlxrtw7ZHC70gD8FL4rtrXSPsUEB4iSp4lg3'}})
+				.then(response => response.data.result);
+			return locationData;
+		}
 	} catch (error) {
 		return 'error';
 	}
@@ -30,6 +36,7 @@ exports.getMaxTemperature = async ({location, year}) => {
 // Get minimum temperature for a year - Must return a number
 exports.getMinTemperature = async ({location, year}) => {
 	const weatherData = await fetchData(location, year);
+	//console.log(weatherData)
 	if (weatherData !== 'error') {
 		let minTemp = weatherData[0].temperature_min;
 		for (let i = 0; i < weatherData.length; i++) {
@@ -45,7 +52,20 @@ exports.getMinTemperature = async ({location, year}) => {
 
 // Get maximum Temperature for all years - Must return a number
 exports.getMaxTemperatureForLocation = async ({location}) => {
-	return 0;
+	const locationData = await fetchData(location, 0);
+	let startYear = locationData.startYear;
+	let endYear = locationData.endYear;
+	let maxTempForAllYears = 0 ;
+	// find max temp for each year
+	for (let year = startYear; year <= endYear; year++) {
+		let maxTemp = await exports.getMaxTemperature({location:location, year:year});
+		//console.log(maxTemp)
+		if (maxTemp > maxTempForAllYears) {
+			maxTempForAllYears = maxTemp;
+		}
+	}
+	return maxTempForAllYears;
+
 }
 
 // Get minimum temperature for all years - Must return a number
