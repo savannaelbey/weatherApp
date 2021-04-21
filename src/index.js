@@ -87,7 +87,18 @@ exports.getMinTemperatureForLocation = async ({location}) => {
 
 // Get average sun hours for a year - Must return a number
 exports.getAverageSunHours = async ({location, year}) => {
-	return 0;
+	const weatherData = await fetchData(location, year);
+	//console.log(weatherData);
+	// counter
+	let totalSunHours = 0;
+	// Iterate over each month of the year and add the sun value to the sunHours counter
+	for (let i = 0; i < weatherData.length; i++) {
+		let sunHours = weatherData[i].sun;
+		totalSunHours += sunHours;
+	}
+	// calculate average sun hours for a year and convert string result to number
+	const AverageSunHoursForYear = Number((totalSunHours / 12).toFixed(1));
+	return AverageSunHoursForYear;
 }
 
 // Get average sun hours for all years - Must return a number
