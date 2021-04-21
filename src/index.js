@@ -53,39 +53,46 @@ exports.getMinTemperature = async ({location, year}) => {
 	}
 }
 
+
+
+
+
+
+
+
+calculateRequiredTemperatureForLocation = async (yearsData, temp, method, location) => {
+  let startYear = yearsData.startYear;
+	let endYear = yearsData.endYear;
+	let temperature = temp ;
+	for (let year = startYear; year <= endYear; year++) {
+    if (method === 'minTemp') {
+      let minTempForYear = await exports.getMinTemperature({location:location, year:year});
+      if (minTempForYear < temperature) {
+        temperature = minTempForYear;
+      }
+    } else if (method === 'maxTemp') {
+      let maxTempForYear = await exports.getMaxTemperature({location:location, year:year});
+	     if (maxTempForYear > temperature) {
+			    temperature = maxTempForYear;
+        }
+      }
+
+	  }
+	return temperature;
+}
+
 // Get maximum Temperature for all years - Must return a number
 exports.getMaxTemperatureForLocation = async ({location}) => {
 	const yearsData = await exports.fetchData(location, 0);
-	let startYear = yearsData.startYear;
-	let endYear = yearsData.endYear;
-	let maxTempForAllYears = 0 ;
-	// find max temp for each year
-	for (let year = startYear; year <= endYear; year++) {
-		let maxTemp = await exports.getMaxTemperature({location:location, year:year});
-		//console.log(maxTemp)
-		if (maxTemp > maxTempForAllYears) {
-			maxTempForAllYears = maxTemp;
-		}
-	}
-	return maxTempForAllYears;
-
+	const maxTemperatureForLocation = await calculateRequiredTemperatureForLocation(yearsData, 0, 'maxTemp', location);
+	return yearsData === 'error' ? 0 : maxTemperatureForLocation;
 }
 
 // Get minimum temperature for all years - Must return a number
 exports.getMinTemperatureForLocation = async ({location}) => {
 	const yearsData = await exports.fetchData(location, 0);
-	let startYear = yearsData.startYear;
-	let endYear = yearsData.endYear;
-	let minTempForAllYears = 100 ;
-	// find min temp for each year
-	for (let year = startYear; year <= endYear; year++) {
-		let minTemp = await exports.getMinTemperature({location:location, year:year});
-		//console.log(minTemp)
-		if (minTemp < minTempForAllYears) {
-			minTempForAllYears = minTemp;
-		}
-	}
-	return minTempForAllYears;
+	const minTemperatureForLocation = await calculateRequiredTemperatureForLocation(yearsData, 100, 'minTemp', location);
+	return yearsData === 'error' ? 0 : minTemperatureForLocation;
 }
 
 // Get average sun hours for a year - Must return a number
@@ -102,8 +109,6 @@ exports.getAverageSunHours = async ({location, year}) => {
 				let sunHours = weatherData[i].sun;
 				totalSunHours += sunHours;
 				monthsNumber += 1;
-			} else {
-				null
 			}
 		}
 		// calculate average sun hours and convert string result to number
