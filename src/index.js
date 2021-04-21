@@ -20,37 +20,40 @@ exports.fetchData = async (location, year) => {
 	}
 }
 
+
+
+calculateRequiredTemperature = async (requiredTemp, weatherData) => {
+  if (requiredTemp === 'max') {
+    let maxTemp = weatherData[0].temperature_max;
+    for (let i = 0; i < weatherData.length; i++) {
+      if (weatherData[i].temperature_max > maxTemp) {
+        maxTemp = weatherData[i].temperature_max;
+      }
+    }
+    return typeof(maxTemp) === 'number' ? maxTemp : 0;
+  } else if (requiredTemp === 'min') {
+      let minTemp = weatherData[0].temperature_min;
+      for (let i = 0; i < weatherData.length; i++) {
+        if (weatherData[i].temperature_min < minTemp) {
+          minTemp = weatherData[i].temperature_min;
+        }
+      }
+      return typeof(minTemp) === 'number' ? minTemp : 0;
+  }
+}
+
 // Get maximum Temperature for a year - Must return a number
 exports.getMaxTemperature = async ({location, year}) => {
 	const weatherData = await exports.fetchData(location, year);
-	if (weatherData !== 'error') {
-		let maxTemp = weatherData[0].temperature_max;
-		for (let i = 0; i < weatherData.length; i++) {
-			if (weatherData[i].temperature_max > maxTemp) {
-				maxTemp = weatherData[i].temperature_max;
-			}
-		}
-		return typeof(maxTemp) === 'number' ? maxTemp : 0;
-	} else {
-		return 0;
-	}
+	const maxTemperature = await calculateRequiredTemperature('max', weatherData);
+	return weatherData === 'error' ? 0 : maxTemperature;
 }
 
 // Get minimum temperature for a year - Must return a number
 exports.getMinTemperature = async ({location, year}) => {
 	const weatherData = await exports.fetchData(location, year);
-	//console.log(weatherData)
-	if (weatherData !== 'error') {
-		let minTemp = weatherData[0].temperature_min;
-		for (let i = 0; i < weatherData.length; i++) {
-			if (weatherData[i].temperature_min < minTemp) {
-				minTemp = weatherData[i].temperature_min;
-			}
-		}
-		return typeof(minTemp) === 'number' ? minTemp : 0;
-	} else {
-		return 0;
-	}
+	const minTemperature = await calculateRequiredTemperature('min', weatherData);
+	return weatherData === 'error' ? 0 : minTemperature;
 }
 
 
