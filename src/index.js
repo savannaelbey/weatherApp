@@ -104,8 +104,8 @@ exports.getAverageSunHours = async ({location, year}) => {
 			}
 		}
 		// calculate average sun hours and convert string result to number
-		const AverageSunHours = Number((totalSunHours / monthsNumber).toFixed(1));
-		return AverageSunHours ? AverageSunHours : 0;
+		const averageSunHours = Number((totalSunHours / monthsNumber).toFixed(1));
+		return averageSunHours ? averageSunHours : 0;
 	} else {
 		return 0
 	}
@@ -113,5 +113,19 @@ exports.getAverageSunHours = async ({location, year}) => {
 
 // Get average sun hours for all years - Must return a number
 exports.getAverageSunHoursForLocation = async ({location}) => {
-	return 0;
+	const yearsData = await fetchData(location, 0);
+	let startYear = yearsData.startYear;
+	let endYear = yearsData.endYear;
+	let totalSunHoursAverages = 0;
+	let numOfYears = 0;
+	// find average sun hours for each year
+	for (let year = startYear; year <= endYear; year++) {
+		let averageSunHoursForYear = await exports.getAverageSunHours({location:location, year:year});
+		if (averageSunHoursForYear !== 0) {
+			totalSunHoursAverages += averageSunHoursForYear;
+			numOfYears += 1;
+		}
+	}
+	const averageSunHoursForLocation = totalSunHoursAverages === 0 ? 0 : Number((totalSunHoursAverages / numOfYears).toFixed(1));
+	return averageSunHoursForLocation;
 }
