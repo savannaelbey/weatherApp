@@ -1,14 +1,17 @@
+const dotenv = require('dotenv');
+dotenv.config();
 const axios = require('axios');
 
 // fetch data
 fetchData = async (location, year) => {
+	const baseURL = `https://grudwxjpa2.execute-api.eu-west-2.amazonaws.com/dev/`;
 	try {
 		if (year) {
-			const weatherData = await axios.get(`https://grudwxjpa2.execute-api.eu-west-2.amazonaws.com/dev/${location}/year/${year}`, { headers: {'x-api-key': 'mcDLmlxrtw7ZHC70gD8FL4rtrXSPsUEB4iSp4lg3'}})
+			const weatherData = await axios.get(`${baseURL}${location}/year/${year}`, { headers: {'x-api-key': process.env.API_KEY}})
 				.then(response => response.data.result);
 			return weatherData;
 		} else {
-			const yearsData = await axios.get(`https://grudwxjpa2.execute-api.eu-west-2.amazonaws.com/dev/${location}/years`, { headers: {'x-api-key': 'mcDLmlxrtw7ZHC70gD8FL4rtrXSPsUEB4iSp4lg3'}})
+			const yearsData = await axios.get(`${baseURL}${location}/years`, { headers: {'x-api-key': process.env.API_KEY}})
 				.then(response => response.data.result);
 			return yearsData;
 		}
