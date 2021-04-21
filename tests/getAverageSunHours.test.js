@@ -7,4 +7,10 @@ describe('getAverageSunHours', () => {
     const result = await getAverageSunHours({location: location, year: year});
     expect(result).toEqual(147.9);
   });
+  it('returns 0 if no sun hours data is available', async () => {
+    const location = 'oxford';
+    const year = 1853;
+    const result = await getAverageSunHours({location: location, year: year});
+    expect(result).toEqual(0);
+  });
 });

@@ -4,13 +4,13 @@ const axios = require('axios');
 fetchData = async (location, year) => {
 	try {
 		if (year) {
-			const locationYearDataArray = await axios.get(`https://grudwxjpa2.execute-api.eu-west-2.amazonaws.com/dev/${location}/year/${year}`, { headers: {'x-api-key': 'mcDLmlxrtw7ZHC70gD8FL4rtrXSPsUEB4iSp4lg3'}})
+			const weatherData = await axios.get(`https://grudwxjpa2.execute-api.eu-west-2.amazonaws.com/dev/${location}/year/${year}`, { headers: {'x-api-key': 'mcDLmlxrtw7ZHC70gD8FL4rtrXSPsUEB4iSp4lg3'}})
 				.then(response => response.data.result);
-			return locationYearDataArray;
+			return weatherData;
 		} else {
-			const locationData = await axios.get(`https://grudwxjpa2.execute-api.eu-west-2.amazonaws.com/dev/${location}/years`, { headers: {'x-api-key': 'mcDLmlxrtw7ZHC70gD8FL4rtrXSPsUEB4iSp4lg3'}})
+			const yearsData = await axios.get(`https://grudwxjpa2.execute-api.eu-west-2.amazonaws.com/dev/${location}/years`, { headers: {'x-api-key': 'mcDLmlxrtw7ZHC70gD8FL4rtrXSPsUEB4iSp4lg3'}})
 				.then(response => response.data.result);
-			return locationData;
+			return yearsData;
 		}
 	} catch (error) {
 		return 'error';
@@ -52,9 +52,9 @@ exports.getMinTemperature = async ({location, year}) => {
 
 // Get maximum Temperature for all years - Must return a number
 exports.getMaxTemperatureForLocation = async ({location}) => {
-	const locationData = await fetchData(location, 0);
-	let startYear = locationData.startYear;
-	let endYear = locationData.endYear;
+	const yearsData = await fetchData(location, 0);
+	let startYear = yearsData.startYear;
+	let endYear = yearsData.endYear;
 	let maxTempForAllYears = 0 ;
 	// find max temp for each year
 	for (let year = startYear; year <= endYear; year++) {
@@ -70,9 +70,9 @@ exports.getMaxTemperatureForLocation = async ({location}) => {
 
 // Get minimum temperature for all years - Must return a number
 exports.getMinTemperatureForLocation = async ({location}) => {
-	const locationData = await fetchData(location, 0);
-	let startYear = locationData.startYear;
-	let endYear = locationData.endYear;
+	const yearsData = await fetchData(location, 0);
+	let startYear = yearsData.startYear;
+	let endYear = yearsData.endYear;
 	let minTempForAllYears = 100 ;
 	// find min temp for each year
 	for (let year = startYear; year <= endYear; year++) {
@@ -89,16 +89,26 @@ exports.getMinTemperatureForLocation = async ({location}) => {
 exports.getAverageSunHours = async ({location, year}) => {
 	const weatherData = await fetchData(location, year);
 	//console.log(weatherData);
-	// counter
-	let totalSunHours = 0;
-	// Iterate over each month of the year and add the sun value to the sunHours counter
-	for (let i = 0; i < weatherData.length; i++) {
-		let sunHours = weatherData[i].sun;
-		totalSunHours += sunHours;
+	if (weatherData !== 'error') {
+		// counter
+		let totalSunHours = 0;
+		let monthsNumber = 0
+		// Iterate over each month of the year and add the sun value to the sunHours counter
+		for (let i = 0; i < weatherData.length; i++) {
+			if ( weatherData[i].sun !== 'null') {
+				let sunHours = weatherData[i].sun;
+				totalSunHours += sunHours;
+				monthsNumber += 1;
+			} else {
+				null
+			}
+		}
+		// calculate average sun hours and convert string result to number
+		const AverageSunHours = Number((totalSunHours / monthsNumber).toFixed(1));
+		return AverageSunHours ? AverageSunHours : 0;
+	} else {
+		return 0
 	}
-	// calculate average sun hours for a year and convert string result to number
-	const AverageSunHoursForYear = Number((totalSunHours / 12).toFixed(1));
-	return AverageSunHoursForYear;
 }
 
 // Get average sun hours for all years - Must return a number
