@@ -81,12 +81,10 @@ exports.fetchData = async (location, year) => {
 	const baseURL = `https://grudwxjpa2.execute-api.eu-west-2.amazonaws.com/dev/`;
 	try {
 		if (year) {
-			const weatherData = await axios.get(`${baseURL}${location}/year/${year}`, { headers: {'x-api-key': process.env.API_KEY}})
-				.then(response => response.data.result);
+			const weatherData = await axios.get(`${baseURL}${location}/year/${year}`, { headers: {'x-api-key': process.env.API_KEY}}).data.result;
 			return weatherData;
 		} else {
-			const yearsData = await axios.get(`${baseURL}${location}/years`, { headers: {'x-api-key': process.env.API_KEY}})
-				.then(response => response.data.result);
+			const yearsData = await axios.get(`${baseURL}${location}/years`, { headers: {'x-api-key': process.env.API_KEY}}).data.result;
 			return yearsData;
 		}
 	} catch (error) {
